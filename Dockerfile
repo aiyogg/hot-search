@@ -17,11 +17,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml* ./
-RUN \
-  if [ -f pnpm-lock.yaml ]; then npm install pnpm -g && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
+RUN npm install pnpm -g --registry=https://registry.npmmirror.com \
+  && pnpm i --frozen-lockfile --registry=https://registry.npmmirror.com;
 
 # Rebuild the source code only when needed
 FROM base AS builder
