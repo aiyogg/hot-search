@@ -20,22 +20,43 @@ async function getWeiboData() {
   const words: Word[] = data?.realtime
     .filter((item) => item.ad_channel !== 1)
     .map((item) => ({
-      url: `https://s.weibo.com/weibo?q=${item.word_scheme}`,
+      url: `https://s.weibo.com/weibo?q=${encodeURIComponent(
+        item.word_scheme
+      )}`,
       title: item.word,
     }))
   return words
 }
 
 async function getZhihuData() {
-  const response = await fetch('https://www.zhihu.com/api/v4/search/top_search')
+  const response = await fetch(
+    'https://www.zhihu.com/api/v4/creators/rank/hot?domain=0&period=hour'
+  )
   if (!response.ok) {
     throw new Error(response.statusText)
   }
-  const { top_search } = await response.json()
-  const words: Word[] = top_search?.words.map((item) => ({
-    url: `https://www.zhihu.com/search?q=${item.query}`,
-    title: item.display_query,
+  const { data } = await response.json()
+  const words: Word[] = data?.map(({ question }) => ({
+    url: question.url,
+    title: question.title,
   }))
+  return words
+}
+
+async function getToutiaoData() {
+  const response = await fetch(
+    'https://www.toutiao.com/api/pc/feed/?category=news_hot'
+  )
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  const { data } = await response.json()
+  const words: Word[] = data
+    ?.filter((item) => item.tag !== 'news_politics')
+    .map((item) => ({
+      url: `https://www.toutiao.com${item.source_url}`,
+      title: item.title,
+    }))
   return words
 }
 
@@ -46,8 +67,16 @@ export default async function Page({
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const weiboData = await getWeiboData()
-  const zhihuData = await getZhihuData()
+  const [weiboWords, zhihuWords, toutiaoWords] = await Promise.all([
+    getWeiboData(),
+    getZhihuData(),
+    getToutiaoData(),
+  ])
+  const trendingWords = [
+    { title: 'Weibo', words: weiboWords.slice(0, 10) },
+    { title: 'Zhihu', words: zhihuWords.slice(0, 10) },
+    { title: 'Toutiao', words: toutiaoWords.slice(0, 10) },
+  ]
 
   return (
     <main className="container mx-auto px-5 py-10">
@@ -72,70 +101,40 @@ export default async function Page({
       </section>
       <section className="py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <div
-            className="rounded-lg border bg-card text-card-foreground shadow-sm p-5"
-          >
-            <div className="flex flex-col space-y-1.5 pb-3">
-              <h3 className="text-2xl font-semibold leading-none tracking-tight">
-                Weibo Hot Search
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Discover the Weibo latest trends.
-              </p>
+          {trendingWords.map(({ title, words }) => (
+            <div
+              key={title}
+              className="rounded-lg border bg-card text-card-foreground shadow-sm p-5"
+            >
+              <div className="flex flex-col space-y-1.5 pb-3">
+                <h3 className="text-2xl font-semibold leading-none tracking-tight">
+                  {title} Hot Search
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Discover the {title} latest trends.
+                </p>
+              </div>
+              <div className="space-y-2">
+                {words.map((x, i) => (
+                  <a
+                    key={x.url}
+                    href={`${x.url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center space-x-3"
+                  >
+                    <span className="text-base text-gray-900 font-normal hover:font-medium text-primary-foreground">
+                      {i + 1}. {x.title}
+                    </span>
+                  </a>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {weiboData.map((x, i) => (
-                <a
-                  key={x.url}
-                  href={`${x.url}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center space-x-3"
-                >
-                  <span className="text-sm font-medium text-primary-foreground">
-                    {i + 1}.
-                  </span>
-                  <span className="text-sm font-medium text-primary-foreground">
-                    {x.title}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-          <div
-            className="rounded-lg border bg-card text-card-foreground shadow-sm p-5"
-          >
-            <div className="flex flex-col space-y-1.5 pb-3">
-              <h3 className="text-2xl font-semibold leading-none tracking-tight">
-                Zhihu Hot Search
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Discover the Zhihu latest trends.
-              </p>
-            </div>
-            <div className="space-y-2">
-              {zhihuData.map((x, i) => (
-                <a
-                  key={x.url}
-                  href={`${x.url}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center space-x-3"
-                >
-                  <span className="text-sm font-medium text-primary-foreground">
-                    {i + 1}.
-                  </span>
-                  <span className="text-sm font-medium text-primary-foreground">
-                    {x.title}
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </main>
   )
 }
 
-export const revalidate = 1800
+export const revalidate = 300
