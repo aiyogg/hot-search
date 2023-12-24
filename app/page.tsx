@@ -1,3 +1,5 @@
+import {clsxm} from './utils/helpers'
+
 interface Word {
   url: string
   title: string
@@ -43,19 +45,18 @@ async function getZhihuData() {
   return words
 }
 
-async function getToutiaoData() {
+async function getPengpaiData() {
   const response = await fetch(
-    'https://www.toutiao.com/api/pc/feed/?category=news_hot'
+    'https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar'
   )
   if (!response.ok) {
     throw new Error(response.statusText)
   }
-  const { data } = await response.json()
-  const words: Word[] = data
-    ?.filter((item) => item.tag !== 'news_politics')
-    .map((item) => ({
-      url: `https://www.toutiao.com${item.source_url}`,
-      title: item.title,
+  const { data: {hotNews} } = await response.json()
+  const words: Word[] = hotNews
+    ?.map((item) => ({
+      url: `https://www.thepaper.cn/newsDetail_forward_${item.contId}`,
+      title: item.name,
     }))
   return words
 }
@@ -67,15 +68,15 @@ export default async function Page({
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const [weiboWords, zhihuWords, toutiaoWords] = await Promise.all([
+  const [weiboWords, zhihuWords, pengpaiWords] = await Promise.all([
     getWeiboData(),
     getZhihuData(),
-    getToutiaoData(),
+    getPengpaiData(),
   ])
   const trendingWords = [
     { title: 'Weibo', words: weiboWords.slice(0, 10) },
     { title: 'Zhihu', words: zhihuWords.slice(0, 10) },
-    { title: 'Toutiao', words: toutiaoWords.slice(0, 10) },
+    { title: 'Pengpai', words: pengpaiWords.slice(0, 10) },
   ]
 
   return (
@@ -85,7 +86,7 @@ export default async function Page({
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                Hot Search Trending
+                <span className=" bg-gradient-to-tr from-red-600 via-yellow-400  to-red-600 text-transparent bg-clip-text">Hot Search</span> Trending
               </h1>
               <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                 Discover the top trending right now.
@@ -121,10 +122,15 @@ export default async function Page({
                     href={`${x.url}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center space-x-3"
+                    className="flex items-center space-x-3 first-of-type:pt-2 last-of-type:pb-2"
                   >
-                    <span className="text-base text-gray-900 font-normal hover:font-medium text-primary-foreground">
-                      {i + 1}. {x.title}
+                    <span className={clsxm("inline-block w-5 rounded text-sm text-center bg-gray-300 text-gray-900",
+                      i === 0 && "bg-red-500 text-white",
+                      i === 1 && "bg-orange-500 text-white",
+                      i === 2 && "bg-yellow-400 text-white",
+                    )}>{i + 1}</span>
+                    <span className="flex-1 text-base text-gray-900 font-normal hover:underline hover:underline-offset-4 text-primary-foreground">
+                      {x.title}
                     </span>
                   </a>
                 ))}
@@ -137,4 +143,4 @@ export default async function Page({
   )
 }
 
-export const revalidate = 300
+export const revalidate = 0
