@@ -163,6 +163,8 @@ export const metadata: Metadata = {
     url: seo.url,
   },
   twitter: {
+    site: '@tim_cook',
+    creator: '@tim_cook',
     card: 'summary_large_image',
     title: seo.title,
     description: seo.description,
