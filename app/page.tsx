@@ -1,4 +1,5 @@
 import {clsxm} from './utils/helpers'
+import type { Metadata } from 'next'
 
 interface Word {
   url: string
@@ -143,4 +144,10 @@ export default async function Page({
   )
 }
 
-export const revalidate = 0
+export const revalidate = 0 
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NODE_ENV === 'production' ? 'https://hot.fuckgfw.space' : 'http://localhost:3000'),
+  title: 'Hot Search Trending',
+  description: 'China’s trending social media hot searches',
+}
