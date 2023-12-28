@@ -1,6 +1,4 @@
-import type { Metadata } from 'next'
 import {clsxm} from '../utils/helpers'
-import {seo} from '../lib/seo'
 
 interface Word {
   url: string
@@ -146,27 +144,3 @@ export default async function Page({
 }
 
 export const revalidate = 0 
-
-export const metadata: Metadata = {
-  metadataBase: seo.url,
-  title: seo.title,
-  description: seo.description,
-  openGraph: {
-    title: {
-      default: seo.title,
-      template: '%s | Hot Search Trending',
-    },
-    description: seo.description,
-    siteName: seo.title,
-    locale: 'zh_CN',
-    type: 'website',
-    url: seo.url,
-  },
-  twitter: {
-    site: '@tim_cook',
-    creator: '@tim_cook',
-    card: 'summary_large_image',
-    title: seo.title,
-    description: seo.description,
-  },
-}
