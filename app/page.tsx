@@ -129,7 +129,7 @@ export default async function Page({
                       i === 1 && "bg-orange-500 text-white",
                       i === 2 && "bg-yellow-400 text-white",
                     )}>{i + 1}</span>
-                    <span className="flex-1 text-base text-gray-900 font-normal hover:underline hover:underline-offset-4 text-primary-foreground">
+                    <span className="flex-1 text-base text-gray-900 dark:text-slate-200 font-normal hover:underline hover:underline-offset-4 text-primary-foreground">
                       {x.title}
                     </span>
                   </a>
