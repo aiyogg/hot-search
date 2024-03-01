@@ -63,17 +63,19 @@ async function getPengpaiData() {
 }
 
 function CardSkeleton() {
+  const placeholderWidths = ["w-1/2", "w-3/4", "w-3/5"]
+
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-5 animate-pulse">
-      <div className="flex flex-col space-y-1.5 pb-3">
-        <div className="w-3/4 h-5 bg-gray-300 rounded"></div>
-        <div className="w-1/2 h-3 bg-gray-300 rounded"></div>
+      <div className="flex flex-col space-y-1.5 pb-3 mb-1">
+        <div className="w-3/4 h-5 mb-2 bg-gray-300 rounded"></div>
+        <div className="w-1/2 h-3 mb-3 bg-gray-300 rounded"></div>
       </div>
       <div className="space-y-2">
-        {new Array(10).fill(null).map((_, i) => (
-          <div key={i} className="flex items-center space-x-3 first-of-type:pt-2 last-of-type:pb-2">
+        {new Array(15).fill(null).map((_, i) => (
+          <div key={i} className="flex items-center space-x-5 pb-1 first-of-type:pt-2 last-of-type:pb-2">
             <span className="w-5 h-5 bg-gray-300 rounded"></span>
-            <div className="flex-1 h-5 bg-gray-300 rounded"></div>
+            <div className={clsxm("h-4 bg-gray-300 rounded", placeholderWidths[i%3])}></div>
           </div>
         ))}
       </div>
