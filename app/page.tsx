@@ -1,3 +1,4 @@
+import { Suspense, use } from 'react'
 import {clsxm} from '../utils/helpers'
 
 interface Word {
@@ -61,6 +62,65 @@ async function getPengpaiData() {
   return words
 }
 
+function CardSkeleton() {
+  return (
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-5 animate-pulse">
+      <div className="flex flex-col space-y-1.5 pb-3">
+        <div className="w-3/4 h-5 bg-gray-300 rounded"></div>
+        <div className="w-1/2 h-3 bg-gray-300 rounded"></div>
+      </div>
+      <div className="space-y-2">
+        {new Array(10).fill(null).map((_, i) => (
+          <div key={i} className="flex items-center space-x-3 first-of-type:pt-2 last-of-type:pb-2">
+            <span className="w-5 h-5 bg-gray-300 rounded"></span>
+            <div className="flex-1 h-5 bg-gray-300 rounded"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Card({title, request}: {title: string, request: () => Promise<Word[]>}) {
+  const words = use(request().then((data) => data.slice(0, title === 'Weibo' ? 15: 10)));
+
+  return (
+    <div
+      key={title}
+      className="rounded-lg border bg-card text-card-foreground shadow-sm p-5"
+    >
+      <div className="flex flex-col space-y-1.5 pb-3">
+        <h3 className="text-2xl font-semibold leading-none tracking-tight">
+          {title} Hot Search
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Discover the {title} latest trends.
+        </p>
+      </div>
+      <div className="space-y-2">
+        {words.map((x, i) => (
+          <a
+            key={x.url}
+            href={`${x.url}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center space-x-3 first-of-type:pt-2 last-of-type:pb-2"
+          >
+            <span className={clsxm("inline-block w-5 rounded text-sm text-center bg-gray-300 text-gray-900",
+              i === 0 && "bg-red-500 text-white",
+              i === 1 && "bg-orange-500 text-white",
+              i === 2 && "bg-yellow-400 text-white",
+            )}>{i + 1}</span>
+            <span className="flex-1 text-base text-gray-900 dark:text-slate-200 font-normal hover:underline hover:underline-offset-4 text-primary-foreground">
+              {x.title}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default async function Page({
   params,
   searchParams,
@@ -68,15 +128,10 @@ export default async function Page({
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const [weiboWords, zhihuWords, pengpaiWords] = await Promise.all([
-    getWeiboData(),
-    getZhihuData(),
-    getPengpaiData(),
-  ])
-  const trendingWords = [
-    { title: 'Weibo', words: weiboWords.slice(0, 10) },
-    { title: 'Zhihu', words: zhihuWords.slice(0, 10) },
-    { title: 'Pengpai', words: pengpaiWords.slice(0, 10) },
+  const sources = [
+    { title: 'Weibo', request: getWeiboData },
+    { title: 'Zhihu', request: getZhihuData },
+    { title: 'Pengpai', request: getPengpaiData },
   ]
 
   return (
@@ -102,40 +157,10 @@ export default async function Page({
       </section>
       <section className="py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {trendingWords.map(({ title, words }) => (
-            <div
-              key={title}
-              className="rounded-lg border bg-card text-card-foreground shadow-sm p-5"
-            >
-              <div className="flex flex-col space-y-1.5 pb-3">
-                <h3 className="text-2xl font-semibold leading-none tracking-tight">
-                  {title} Hot Search
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Discover the {title} latest trends.
-                </p>
-              </div>
-              <div className="space-y-2">
-                {words.map((x, i) => (
-                  <a
-                    key={x.url}
-                    href={`${x.url}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center space-x-3 first-of-type:pt-2 last-of-type:pb-2"
-                  >
-                    <span className={clsxm("inline-block w-5 rounded text-sm text-center bg-gray-300 text-gray-900",
-                      i === 0 && "bg-red-500 text-white",
-                      i === 1 && "bg-orange-500 text-white",
-                      i === 2 && "bg-yellow-400 text-white",
-                    )}>{i + 1}</span>
-                    <span className="flex-1 text-base text-gray-900 dark:text-slate-200 font-normal hover:underline hover:underline-offset-4 text-primary-foreground">
-                      {x.title}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
+          {sources.map(({ title, request }) => (
+            <Suspense key={title} fallback={<CardSkeleton />}>
+              <Card title={title} request={request} />
+            </Suspense>
           ))}
         </div>
       </section>
