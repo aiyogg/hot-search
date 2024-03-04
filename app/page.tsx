@@ -182,7 +182,7 @@ export default async function Page({
       <section className="py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {sources.map(({ title, request }) => (
-            <ErrorBoundary fallback={<CardErrorFallback />}>
+            <ErrorBoundary key={title} fallback={<CardErrorFallback />}>
               <Suspense fallback={<CardSkeleton />}>
                 <Card title={title} request={request} />
               </Suspense>
