@@ -1,5 +1,6 @@
-import { Suspense, use } from 'react'
+import { Suspense } from 'react'
 import {clsxm} from '../utils/helpers'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 interface Word {
   url: string
@@ -62,9 +63,40 @@ async function getPengpaiData() {
   return words
 }
 
-function CardSkeleton() {
+function WordsPlaceholder() {
   const placeholderWidths = ["w-1/2", "w-3/4", "w-3/5"]
 
+  return (
+    <>
+    {new Array(15).fill(null).map((_, i) => (
+      <div key={i} className="flex items-center space-x-5 pb-1 first-of-type:pt-2 last-of-type:pb-2">
+        <span className="w-5 h-5 bg-gray-300 rounded"></span>
+        <div className={clsxm("h-4 bg-gray-300 rounded", placeholderWidths[i%3])}></div>
+      </div>
+    ))}
+    </>
+  )
+}
+
+function CardErrorFallback() {
+  return (
+    <div className="rounded-lg border text-card-foreground shadow-sm p-5">
+      <div className="flex flex-col space-y-1.5 pb-3">
+        <h3 className="text-2xl font-semibold leading-none tracking-tight">
+          Something went wrong
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Please try again later.
+        </p>
+      </div>
+      <div className="space-y-2">
+        <WordsPlaceholder />
+      </div>
+    </div>
+  )
+}
+
+function CardSkeleton() {
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-5 animate-pulse">
       <div className="flex flex-col space-y-1.5 pb-3 mb-1">
@@ -72,24 +104,19 @@ function CardSkeleton() {
         <div className="w-1/2 h-3 mb-3 bg-gray-300 rounded"></div>
       </div>
       <div className="space-y-2">
-        {new Array(15).fill(null).map((_, i) => (
-          <div key={i} className="flex items-center space-x-5 pb-1 first-of-type:pt-2 last-of-type:pb-2">
-            <span className="w-5 h-5 bg-gray-300 rounded"></span>
-            <div className={clsxm("h-4 bg-gray-300 rounded", placeholderWidths[i%3])}></div>
-          </div>
-        ))}
+        <WordsPlaceholder />
       </div>
     </div>
   )
 }
 
-function Card({title, request}: {title: string, request: () => Promise<Word[]>}) {
-  const words = use(request().then((data) => data.slice(0, title === 'Weibo' ? 15: 10)));
+async function Card({title, request}: {title: string, request: () => Promise<Word[]>}) {
+  const words = await request().then((data) => data.slice(0, title === 'Weibo' ? 15: 10));
 
   return (
     <div
       key={title}
-      className="rounded-lg border bg-card text-card-foreground shadow-sm p-5"
+      className="rounded-lg border text-card-foreground shadow-sm p-5"
     >
       <div className="flex flex-col space-y-1.5 pb-3">
         <h3 className="text-2xl font-semibold leading-none tracking-tight">
@@ -149,20 +176,17 @@ export default async function Page({
                 Discover the top trending right now.
               </p>
             </div>
-            {/* <div className="space-x-4">
-                <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                  Discover More
-                </button>
-              </div> */}
           </div>
         </div>
       </section>
       <section className="py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {sources.map(({ title, request }) => (
-            <Suspense key={title} fallback={<CardSkeleton />}>
-              <Card title={title} request={request} />
-            </Suspense>
+            <ErrorBoundary fallback={<CardErrorFallback />}>
+              <Suspense fallback={<CardSkeleton />}>
+                <Card title={title} request={request} />
+              </Suspense>
+            </ErrorBoundary>
           ))}
         </div>
       </section>
