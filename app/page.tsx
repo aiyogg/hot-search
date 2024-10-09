@@ -24,7 +24,7 @@ async function getWeiboData() {
   const words: Word[] = data?.realtime
     .filter((item) => item.ad_channel !== 1)
     .map((item) => ({
-      url: `https://s.weibo.com/weibo?q=${encodeURIComponent(
+      url: `https://m.weibo.cn/search?containerid=100103&q=${encodeURIComponent(
         item.word_scheme
       )}`,
       title: item.word,
@@ -182,7 +182,7 @@ export default async function Page({
       <section className="py-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {sources.map(({ title, request }) => (
-            <ErrorBoundary fallback={<CardErrorFallback />}>
+            <ErrorBoundary key={title} fallback={<CardErrorFallback />}>
               <Suspense fallback={<CardSkeleton />}>
                 <Card title={title} request={request} />
               </Suspense>
