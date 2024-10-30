@@ -1,22 +1,11 @@
-version: '3'
-
 services:
   hot-search:
     container_name: hot-search
     build:
       context: .
       dockerfile: Dockerfile
-      image: hot-search:latest
+    image: hot-search
+
     restart: unless-stopped
     ports:
       - 3000:3000
-    networks:
-      - hot_search_app
-
-  # Add more containers below (nginx, postgres, etc.)
-
-# Define a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-networks:
-  hot_search_app:
-    external: true
