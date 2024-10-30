@@ -1,0 +1,32 @@
+name: Remote Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        uses: Genesys225/cloudflared-service-token-ssh-proxy@v1
+        with:
+          HOST: hot.fuckgfw.store
+          PORT: 22
+          USER: chuck
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          KEY_TYPE: id_rsa
+          REMOTE_SHELL: 'zsh'
+          COMMAND: |
+            cd /home/chuck/code/hot-search
+            git pull
+            docker compose up -d
+            docker image prune -f
