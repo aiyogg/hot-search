@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Deploy
-        uses: Genesys225/cloudflared-service-token-ssh-proxy@v1
+        uses: Genesys225/cloudflared-service-token-ssh-proxy@V1
         with:
           HOST: hot.fuckgfw.store
           PORT: 22
@@ -20,7 +20,7 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          KEY_TYPE: id_rsa
+          KEY_TYPE: id_ed25519
           REMOTE_SHELL: 'zsh'
           COMMAND: |
             cd /home/chuck/code/hot-search
