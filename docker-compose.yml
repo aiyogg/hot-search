@@ -1,0 +1,11 @@
+services:
+  hot-search:
+    container_name: hot-search
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hot-search
+
+    restart: unless-stopped
+    ports:
+      - 3000:3000
