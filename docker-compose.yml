@@ -1,24 +1,22 @@
 version: '3'
 
 services:
-  next-app:
-    container_name: next-app
+  hot-search:
+    container_name: hot-search
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        ENV_VARIABLE: ${ENV_VARIABLE}
-        NEXT_PUBLIC_ENV_VARIABLE: ${NEXT_PUBLIC_ENV_VARIABLE}
-    restart: always
+      image: hot-search:latest
+    restart: unless-stopped
     ports:
       - 3000:3000
     networks:
-      - my_network
+      - hot_search_app
 
   # Add more containers below (nginx, postgres, etc.)
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
 networks:
-  my_network:
+  hot_search_app:
     external: true
