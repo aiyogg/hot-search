@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Deploy
-        uses: Genesys225/cloudflared-service-token-ssh-proxy@V1
+        uses: Genesys225/cloudflared-service-token-ssh-proxy@V1.0.6
         with:
           HOST: pi4b.fuckgfw.store
           PORT: 22
