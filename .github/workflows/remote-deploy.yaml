@@ -13,7 +13,7 @@ jobs:
       - name: Deploy
         uses: Genesys225/cloudflared-service-token-ssh-proxy@V1
         with:
-          HOST: hot.fuckgfw.store
+          HOST: pi4b.fuckgfw.store
           PORT: 22
           USER: chuck
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
