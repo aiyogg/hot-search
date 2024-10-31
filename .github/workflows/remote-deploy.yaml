@@ -11,18 +11,14 @@ jobs:
 
     steps:
       - name: Deploy
-        uses: Genesys225/cloudflared-service-token-ssh-proxy@V1.0.6
+        uses: and-fm/cloudflared-ssh-action@v3
         with:
-          HOST: pi4b.fuckgfw.store
-          PORT: 22
-          USER: chuck
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-          PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          KEY_TYPE: id_ed25519
-          REMOTE_SHELL: 'zsh'
-          COMMAND: |
+          host: pi4b.fuckgfw.store
+          port: 22
+          username: chuck
+          private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
+          private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
+          commands: |
             cd /home/chuck/code/hot-search
             git pull origin master
             docker compose down
