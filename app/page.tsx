@@ -22,7 +22,7 @@ async function getWeiboData() {
     throw new Error('response not ok')
   }
   const words: Word[] = data?.realtime
-    .filter((item) => item.ad_channel !== 1 && item.is_ad === 1)
+    .filter((item) => item.ad_channel !== 1 && item.is_ad !== 1)
     .map((item) => ({
       url: `https://m.weibo.cn/search?containerid=100103&q=${encodeURIComponent(
         item.word_scheme
