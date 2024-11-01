@@ -19,7 +19,7 @@ jobs:
           private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
           private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
           commands: |
-            export https_proxy=http://127.0.0.1:1080 http_proxy=http://127.0.0.1:1080 all_proxy=socks5://127.0.0.1:1080
+            export https_proxy=http://127.0.0.1:1080 http_proxy=http://127.0.0.1:1080
             cd /home/chuck/code/hot-search
             git pull origin master
             docker compose down

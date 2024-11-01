@@ -4,8 +4,8 @@ FROM node:18-alpine AS base
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 
-RUN echo 'http://mirrors.aliyun.com/alpine/v3.20/main' > /etc/apk/repositories \
-  && echo 'http://mirrors.aliyun.com/alpine/v3.20/community' >> /etc/apk/repositories \
+RUN echo 'http://mirrors.aliyun.com/alpine/v3.18/main' > /etc/apk/repositories \
+  && echo 'http://mirrors.aliyun.com/alpine/v3.18/community' >> /etc/apk/repositories \
   && apk --no-cache add ca-certificates \
   && apk add tzdata \
   && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
