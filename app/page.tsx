@@ -1,6 +1,10 @@
 import { Suspense } from 'react'
 import { clsxm } from '../utils/helpers'
 import ErrorBoundary from '../components/ErrorBoundary'
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
+
+type CardType = 'Weibo' | 'Zhihu' | 'Netease'
 
 interface Word {
   url: string
@@ -64,6 +68,27 @@ async function getPengpaiData() {
   return words
 }
 
+async function getNeteaseData() {
+  const response = await fetch('https://news.163.com/')
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  const html = await response.text()
+  const { document }: { document: Document } = new JSDOM(html).window
+  const hotNewsItems = document.querySelectorAll('.mod_hot_rank ul li')
+
+  const words: Word[] = Array.from(hotNewsItems).map((item: Element) => {
+    const titleElement = item.querySelector('a')
+    console.log(titleElement.innerHTML)
+    return {
+      url: titleElement.href,
+      title: titleElement.innerHTML,
+    }
+  })
+
+  return words
+}
+
 function WordsPlaceholder() {
   const placeholderWidths = ['w-1/2', 'w-3/4', 'w-3/5']
 
@@ -117,11 +142,24 @@ function CardSkeleton() {
   )
 }
 
+function CardBackground({ title }: { title: CardType }) {
+  return (
+    <div
+      className={clsxm(
+        'absolute dark:bg-gray-700 z-[-1] w-full h-full right-0 bottom-0 opacity-30 bg-no-repeat bg-[length:15em] bg-right-bottom',
+        title === 'Weibo' && 'bg-[url(./assets/weibo.svg)]',
+        title === 'Zhihu' && 'bg-[url(./assets/zhihu.svg)]',
+        title === 'Netease' && 'bg-[url(./assets/netease.svg)]'
+      )}
+    />
+  )
+}
+
 async function Card({
   title,
   request,
 }: {
-  title: string
+  title: CardType
   request: () => Promise<Word[]>
 }) {
   const words = await request().then((data) =>
@@ -131,13 +169,14 @@ async function Card({
   return (
     <div
       key={title}
-      className="p-5 dark:bg-slate-800 rounded-lg ring-1 ring-slate-900/5 text-card-foreground shadow-lg"
+      className="relative overflow-hidden p-5 rounded-lg ring-1 ring-slate-900/5 text-card-foreground shadow-lg"
     >
+      <CardBackground title={title} />
       <div className="flex flex-col space-y-1.5 pb-3">
         <h3 className="text-2xl font-semibold leading-none tracking-tight">
           {title} Hot Search
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Discover the {title} latest trends.
         </p>
       </div>
@@ -177,10 +216,11 @@ export default async function Page({
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const sources = [
+  const sources: { title: CardType; request: () => Promise<Word[]> }[] = [
     { title: 'Weibo', request: getWeiboData },
     { title: 'Zhihu', request: getZhihuData },
-    { title: 'Pengpai', request: getPengpaiData },
+    // { title: 'Pengpai', request: getPengpaiData },
+    { title: 'Netease', request: getNeteaseData },
   ]
 
   return (
