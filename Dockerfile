@@ -18,8 +18,8 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml* ./
 RUN npm config set registry https://registry.npmmirror.com \
-  && npm config set proxy null \
-  && npm config set https-proxy null \
+  && npm config set proxy http://127.0.0.1:1080 \
+  && npm config set https-proxy http://127.0.0.1:1080 \
   && npm i pnpm -g \
   && pnpm i --frozen-lockfile
 
