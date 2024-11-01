@@ -79,7 +79,6 @@ async function getNeteaseData() {
 
   const words: Word[] = Array.from(hotNewsItems).map((item: Element) => {
     const titleElement = item.querySelector('a')
-    console.log(titleElement.innerHTML)
     return {
       url: titleElement.href,
       title: titleElement.innerHTML,
