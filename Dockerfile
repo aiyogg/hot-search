@@ -20,7 +20,7 @@ COPY package.json pnpm-lock.yaml* ./
 RUN npm config set registry https://registry.npmmirror.com \
   && npm config delete proxy \
   && npm config delete https-proxy \
-  && npm install pnpm -g \
+  && npm i pnpm -g --proxy null --https-proxy null\
   && pnpm i --frozen-lockfile
 
 # Rebuild the source code only when needed
