@@ -13,9 +13,9 @@ jobs:
       - name: Deploy
         uses: and-fm/cloudflared-ssh-action@v3
         with:
-          host: pi4b.fuckgfw.store
-          port: 22
-          username: chuck
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
           private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
           private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
           commands: |
