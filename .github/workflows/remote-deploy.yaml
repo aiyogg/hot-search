@@ -18,6 +18,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
           private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
+          service_token_id: ${{ secrets.SERVICE_TOKEN_ID }}
+          service_token_secret: ${{ secrets.SERVICE_TOKEN_SECRET }}
           commands: |
             export https_proxy=http://127.0.0.1:1080 http_proxy=http://127.0.0.1:1080
             cd /home/chuck/code/hot-search
