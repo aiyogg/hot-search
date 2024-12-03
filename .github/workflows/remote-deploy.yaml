@@ -26,4 +26,5 @@ jobs:
             git pull origin master
             docker compose down
             docker rmi hot-search:latest || true
+            export BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
             docker compose up -d

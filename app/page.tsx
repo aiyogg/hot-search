@@ -3,13 +3,12 @@ import { clsxm } from '../utils/helpers'
 import ErrorBoundary from '../components/ErrorBoundary'
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
+import CardBackground from './components/CardBackground'
+import CardSkeleton from './components/CardSkeleton'
+import CardErrorFallback from './components/CardErrorFallback'
+import Footer from './components/Footer'
 
-type CardType = 'Weibo' | 'Zhihu' | 'Netease'
-
-interface Word {
-  url: string
-  title: string
-}
+import { CardType, Word } from './types'
 
 async function getWeiboData() {
   const response = await fetch('https://weibo.com/ajax/side/hotSearch', {
@@ -51,25 +50,9 @@ async function getZhihuData() {
   return words
 }
 
-async function getPengpaiData() {
-  const response = await fetch(
-    'https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar'
-  )
-  if (!response.ok) {
-    throw new Error(response.statusText)
-  }
-  const {
-    data: { hotNews },
-  } = await response.json()
-  const words: Word[] = hotNews?.map((item) => ({
-    url: `https://www.thepaper.cn/newsDetail_forward_${item.contId}`,
-    title: item.name,
-  }))
-  return words
-}
-
 async function getNeteaseData() {
   const response = await fetch('https://news.163.com/')
+  await new Promise((resolve) => setTimeout(resolve, 1000))
   if (!response.ok) {
     throw new Error(response.statusText)
   }
@@ -88,72 +71,6 @@ async function getNeteaseData() {
   return words
 }
 
-function WordsPlaceholder() {
-  const placeholderWidths = ['w-1/2', 'w-3/4', 'w-3/5']
-
-  return (
-    <>
-      {new Array(15).fill(null).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center space-x-5 pb-1 first-of-type:pt-2 last-of-type:pb-2"
-        >
-          <span className="w-5 h-5 bg-gray-300 rounded"></span>
-          <div
-            className={clsxm(
-              'h-4 bg-gray-300 rounded',
-              placeholderWidths[i % 3]
-            )}
-          ></div>
-        </div>
-      ))}
-    </>
-  )
-}
-
-function CardErrorFallback() {
-  return (
-    <div className="rounded-lg border text-card-foreground shadow-sm p-5">
-      <div className="flex flex-col space-y-1.5 pb-3">
-        <h3 className="text-2xl font-semibold leading-none tracking-tight">
-          Something went wrong
-        </h3>
-        <p className="text-sm text-muted-foreground">Please try again later.</p>
-      </div>
-      <div className="space-y-2">
-        <WordsPlaceholder />
-      </div>
-    </div>
-  )
-}
-
-function CardSkeleton() {
-  return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-5 animate-pulse">
-      <div className="flex flex-col space-y-1.5 pb-3 mb-1">
-        <div className="w-3/4 h-5 mb-2 bg-gray-300 rounded"></div>
-        <div className="w-1/2 h-3 mb-3 bg-gray-300 rounded"></div>
-      </div>
-      <div className="space-y-2">
-        <WordsPlaceholder />
-      </div>
-    </div>
-  )
-}
-
-function CardBackground({ title }: { title: CardType }) {
-  return (
-    <div
-      className={clsxm(
-        'absolute dark:bg-gray-700 z-[-1] w-full h-full right-0 bottom-0 opacity-30 bg-no-repeat bg-[length:15em] bg-right-bottom',
-        title === 'Weibo' && 'bg-[url(./assets/weibo.svg)]',
-        title === 'Zhihu' && 'bg-[url(./assets/zhihu.svg)]',
-        title === 'Netease' && 'bg-[url(./assets/netease.svg)]'
-      )}
-    />
-  )
-}
-
 async function Card({
   title,
   request,
@@ -168,7 +85,7 @@ async function Card({
   return (
     <div
       key={title}
-      className="relative overflow-hidden p-5 rounded-lg ring-1 ring-slate-900/5 text-card-foreground shadow-lg"
+      className="relative overflow-hidden p-5 rounded-lg ring-1 ring-slate-900/5 shadow-lg"
     >
       <CardBackground title={title} />
       <div className="flex flex-col space-y-1.5 pb-3">
@@ -218,41 +135,43 @@ export default async function Page({
   const sources: { title: CardType; request: () => Promise<Word[]> }[] = [
     { title: 'Weibo', request: getWeiboData },
     { title: 'Zhihu', request: getZhihuData },
-    // { title: 'Pengpai', request: getPengpaiData },
     { title: 'Netease', request: getNeteaseData },
   ]
 
   return (
-    <main className="container mx-auto px-5 py-10">
-      <section className="w-full pb-8 lg:pb-18 xl:pb-22">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                <span className=" bg-gradient-to-tr from-red-600 via-yellow-400 to-red-600 text-transparent bg-clip-text">
-                  Hot Search
-                </span>{' '}
-                Trending
-              </h1>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                Discover the top trending right now.
-              </p>
+    <>
+      <main className="container mx-auto px-5 py-10">
+        <section className="w-full pb-8 lg:pb-18 xl:pb-22">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
+                  <span className=" bg-gradient-to-tr from-red-600 via-yellow-400 to-red-600 text-transparent bg-clip-text">
+                    Hot Search
+                  </span>{' '}
+                  Trending
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                  Discover the top trending right now.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="py-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {sources.map(({ title, request }) => (
-            <ErrorBoundary key={title} fallback={<CardErrorFallback />}>
-              <Suspense fallback={<CardSkeleton />}>
-                <Card title={title} request={request} />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
-        </div>
-      </section>
-    </main>
+        </section>
+        <section className="py-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {sources.map(({ title, request }) => (
+              <ErrorBoundary key={title} fallback={<CardErrorFallback />}>
+                <Suspense fallback={<CardSkeleton />}>
+                  <Card title={title} request={request} />
+                </Suspense>
+              </ErrorBoundary>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
   )
 }
 

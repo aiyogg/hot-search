@@ -4,8 +4,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BUILD_TIME: "${BUILD_TIME}"
     image: hot-search
 
     restart: unless-stopped
     ports:
       - 3000:3000
+    environment:
+      - NEXT_PUBLIC_BUILD_TIME=${BUILD_TIME}
