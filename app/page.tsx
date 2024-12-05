@@ -1,14 +1,14 @@
 import { Suspense } from 'react'
+const jsdom = require('jsdom')
 import { clsxm } from '../utils/helpers'
 import ErrorBoundary from '../components/ErrorBoundary'
-const jsdom = require('jsdom')
-const { JSDOM } = jsdom
-import CardBackground from './components/CardBackground'
-import CardSkeleton from './components/CardSkeleton'
-import CardErrorFallback from './components/CardErrorFallback'
-import Footer from './components/Footer'
+import CardBackground from '../components/CardBackground'
+import CardSkeleton from '../components/CardSkeleton'
+import CardErrorFallback from '../components/CardErrorFallback'
+import Footer from '../components/Footer'
+import type { CardType, Word } from './types'
 
-import { CardType, Word } from './types'
+const { JSDOM } = jsdom
 
 async function getWeiboData() {
   const response = await fetch('https://weibo.com/ajax/side/hotSearch', {
@@ -52,7 +52,6 @@ async function getZhihuData() {
 
 async function getNeteaseData() {
   const response = await fetch('https://news.163.com/')
-  await new Promise((resolve) => setTimeout(resolve, 1000))
   if (!response.ok) {
     throw new Error(response.statusText)
   }
@@ -89,7 +88,7 @@ async function Card({
     >
       <CardBackground title={title} />
       <div className="flex flex-col space-y-1.5 pb-3">
-        <h3 className="text-2xl font-semibold leading-none tracking-tight">
+        <h3 className="text-2xl font-semibold leading-none tracking-wide">
           {title} Hot Search
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">
