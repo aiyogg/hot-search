@@ -21,10 +21,14 @@ jobs:
           service_token_id: ${{ secrets.SERVICE_TOKEN_ID }}
           service_token_secret: ${{ secrets.SERVICE_TOKEN_SECRET }}
           commands: |
-            export https_proxy=http://127.0.0.1:1080 http_proxy=http://127.0.0.1:1080
+            export https_proxy=http://127.0.0.1:1080
+            export http_proxy=http://127.0.0.1:1080
             cd /home/chuck/code/hot-search
             git pull origin master
+            docker build -t hot-search:temp .
             docker compose down
             docker rmi hot-search:latest || true
             export BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            docker tag hot-search:temp hot-search:latest
             docker compose up -d
+            docker rmi hot-search:temp || true
