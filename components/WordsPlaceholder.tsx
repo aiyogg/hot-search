@@ -1,4 +1,4 @@
-import { clsxm } from '../../utils/helpers'
+import { clsxm } from '../utils/helpers'
 
 function WordsPlaceholder() {
   const placeholderWidths = ['w-1/2', 'w-3/4', 'w-3/5']

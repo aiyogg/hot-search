@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import cloudflareSvg from '../assets/cloudflare.svg'
 
 function Footer() {
   return (
@@ -12,11 +11,11 @@ function Footer() {
           rel="noopener noreferrer"
           href="https://cloudflare.com"
         >
-          <Image src={cloudflareSvg} alt="cloudflare" width={70} height={40} />
+          <Image src="/assets/cloudflare.svg" alt="cloudflare" width={70} height={30} />
         </Link>
       </p>
       <p className="mt-2 text-xs text-gray-400">
-        Last release: {process.env.NEXT_PUBLIC_BUILD_TIME || 'Unknown'}
+        Last released: {process.env.NEXT_PUBLIC_BUILD_TIME || 'Unknown'}
       </p>
     </footer>
   )
