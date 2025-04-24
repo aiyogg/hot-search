@@ -7,7 +7,9 @@ FROM base AS deps
 # No need to add mirrors, because container was built with GitHub Actions
 # echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/main' > /etc/apk/repositories \
 # echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/community' >> /etc/apk/repositories \
-RUN apk --no-cache add ca-certificates \
+RUN echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/main' > /etc/apk/repositories \
+  && echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/community' >> /etc/apk/repositories \
+  && apk --no-cache add ca-certificates \
   && apk add tzdata \
   && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
   && echo "Asia/Shanghai" > /etc/timezone \
