@@ -10,7 +10,7 @@ import type { CardType, Word } from './types'
 
 const { JSDOM } = jsdom
 
-async function getWeiboData() {
+export async function getWeiboData() {
   const response = await fetch('https://weibo.com/ajax/side/hotSearch', {
     headers: {
       Cookie:
@@ -35,7 +35,7 @@ async function getWeiboData() {
   return words
 }
 
-async function getZhihuData() {
+export async function getZhihuData() {
   const response = await fetch(
     'https://www.zhihu.com/api/v4/creators/rank/hot?domain=0&period=hour'
   )
@@ -50,7 +50,7 @@ async function getZhihuData() {
   return words
 }
 
-async function getNeteaseData() {
+export async function getNeteaseData() {
   const response = await fetch('https://news.163.com/')
   if (!response.ok) {
     throw new Error(response.statusText)
