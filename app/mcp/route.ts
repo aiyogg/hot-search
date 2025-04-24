@@ -1,7 +1,7 @@
 import { createServerResponseAdapter } from '../../lib/server-response-adapter'
 import { initializeMcpApiHandler } from '../../lib/mcp-api-handler'
 import { CallToolResult } from '@modelcontextprotocol/sdk/types'
-import { getWeiboData, getZhihuData, getNeteaseData } from '../page'
+import { getWeiboData, getZhihuData, getNeteaseData } from '../../lib/fetchData'
 
 const mcpHandler = initializeMcpApiHandler(
   (server) => {
