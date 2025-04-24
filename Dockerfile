@@ -4,11 +4,9 @@ FROM node:18-alpine AS base
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 
-# No need to add mirrors, because container was built with GitHub Actions
-# echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/main' > /etc/apk/repositories \
-# echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/community' >> /etc/apk/repositories \
-RUN echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/main' > /etc/apk/repositories \
-  && echo 'https://mirrors.ustc.edu.cn/alpine/v3.18/community' >> /etc/apk/repositories \
+RUN echo 'https://mirrors.ustc.edu.cn/alpine/latest-stable/main' > /etc/apk/repositories \
+  && echo 'https://mirrors.ustc.edu.cn/alpine/latest-stable/community' >> /etc/apk/repositories \
+  && apk update \
   && apk --no-cache add ca-certificates \
   && apk add tzdata \
   && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
