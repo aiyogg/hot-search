@@ -18,32 +18,39 @@ const mcpHandler = initializeMcpApiHandler(
           },
         })
 
-        const [weiboData, zhihuData, neteaseData] = await Promise.all([
+        const results = await Promise.allSettled([
           getWeiboData(),
           getZhihuData(),
           getNeteaseData(),
         ])
 
+        const [weiboData, zhihuData, neteaseData] = results.map((result) =>
+          result.status === 'fulfilled' ? result.value : []
+        )
+
         return {
           content: [
             {
               type: 'text',
-              text: `微博热搜： ${weiboData.reduce(
-                (acc, curr) => `${acc}\n[${curr.title}](${curr.url})`,
+              text: `## 微博热搜： ${weiboData.reduce(
+                (acc, curr, i) =>
+                  `${acc}\n${i + 1}. [${curr.title}](${curr.url})`,
                 ''
               )}`,
             },
             {
               type: 'text',
-              text: `知乎热搜： ${zhihuData.reduce(
-                (acc, curr) => `${acc}\n[${curr.title}](${curr.url})`,
+              text: `## 知乎热搜： ${zhihuData.reduce(
+                (acc, curr, i) =>
+                  `${acc}\n${i + 1}. [${curr.title}](${curr.url})`,
                 ''
               )}`,
             },
             {
               type: 'text',
-              text: `网易热搜： ${neteaseData.reduce(
-                (acc, curr) => `${acc}\n[${curr.title}](${curr.url})`,
+              text: `## 网易热搜： ${neteaseData.reduce(
+                (acc, curr, i) =>
+                  `${acc}\n${i + 1}. [${curr.title}](${curr.url})`,
                 ''
               )}`,
             },
@@ -56,7 +63,7 @@ const mcpHandler = initializeMcpApiHandler(
     capabilities: {
       logging: {},
       tools: {
-        '热搜新闻榜单': {
+        热搜新闻榜单: {
           description: '今日微博、知乎、网易热搜新闻',
         },
       },
