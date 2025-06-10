@@ -6,7 +6,7 @@ import { getWeiboData, getZhihuData, getNeteaseData } from '../../lib/fetchData'
 const mcpHandler = initializeMcpApiHandler(
   (server) => {
     server.tool(
-      '热搜新闻榜单',
+      'hot_search_news',
       '今日微博、知乎、网易热搜新闻',
       {},
       async ({}, { sendNotification }): Promise<CallToolResult> => {
@@ -25,7 +25,7 @@ const mcpHandler = initializeMcpApiHandler(
         ])
 
         const [weiboData, zhihuData, neteaseData] = results.map((result) =>
-          result.status === 'fulfilled' ? result.value : []
+          result.status === 'fulfilled' ? result.value.slice(0, 10) : []
         )
 
         return {
