@@ -12,7 +12,7 @@ Add the following config to your MCP client:
       "name": "Hot Search News",
       "type": "streamableHttp",
       "description": "Today's hot search news on Weibo, Zhihu and Pengpai News",
-      "baseUrl": "https://hot.fuckgfw.store/mcp"
+      "baseUrl": "https://hot.fuckgfw.site/mcp"
     },
   }
 }
