@@ -6,8 +6,7 @@ const { JSDOM } = jsdom
 export async function getWeiboData() {
   const response = await fetch('https://weibo.com/ajax/side/hotSearch', {
     headers: {
-      Cookie:
-        'SUB=_2AkMWJrkXf8NxqwJRmP8SxWjnaY12zwnEieKgekjMJRMxHRl-yj9jqmtbtRB6PaaX-IGp-AjmO6k5cS-OH2X9CayaTzVD',
+      referer: 'https://weibo.com/',
     },
   })
   if (!response.ok) {
